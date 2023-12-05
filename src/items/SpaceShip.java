@@ -1,4 +1,4 @@
-package Setup;
+package items;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SpaceShip {
+public class SpaceShip{
+    private boolean isIntersected;
     private int level;
     private int coordinateX;
     private int coordinateY;
@@ -18,10 +19,11 @@ public class SpaceShip {
     private static String defaultBildPath = "bild/";
     private BufferedImage spaceShipImage;
 
-    SpaceShip() {
+    public SpaceShip() {
         this.level = 1;
         this.coordinateX = 0;
-        this.coordinateY = 440;
+        this.coordinateY = 540;
+        this.isIntersected=false;
         assignSpaceShipImage();
 
 
@@ -34,6 +36,13 @@ public class SpaceShip {
         } catch (IOException e) {
             Logger.getLogger(SpaceShip.class.getName()).log(Level.SEVERE, null, e);
         }
+    }
+    public boolean isIntersected() {
+        return isIntersected;
+    }
+
+    public void setIntersected(boolean intersected) {
+        isIntersected = intersected;
     }
 
     public BufferedImage getSpaceShipImage() {

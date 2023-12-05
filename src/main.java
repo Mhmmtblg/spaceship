@@ -1,6 +1,6 @@
-import Setup.GameScreen;
+import gui.GameScreen;
 
-public class Main {
+public class main {
     public static void main(String[] args) {
 
         System.out.print("Hello and welcome!");

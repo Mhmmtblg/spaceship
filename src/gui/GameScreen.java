@@ -1,4 +1,4 @@
-package Setup;
+package gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ public class GameScreen extends JFrame {
     private final GamePanel gamePanel;
 
 
-    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(800, 600);
+    private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(800, 700);
 
     public GameScreen() {
         this.gameFrame = new JFrame("Spaceship Game");
