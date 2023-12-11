@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 public class GameScreen extends JFrame {
     private final JFrame gameFrame;
     private final GamePanel gamePanel;
-
+    private final GameInfoPanel gameInfoPanel;
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(800, 700);
 
@@ -22,6 +22,8 @@ public class GameScreen extends JFrame {
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.gamePanel = new GamePanel();
+        this.gameInfoPanel = new GameInfoPanel();
+        this.gameFrame.add(this.gameInfoPanel, BorderLayout.NORTH);
         this.gameFrame.add(this.gamePanel, BorderLayout.CENTER);
         this.gameFrame.setVisible(true);
     }

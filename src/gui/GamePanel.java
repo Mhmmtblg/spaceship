@@ -17,14 +17,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     Timer timer = new Timer(5, this);
 
 
-    private ArrayList<Munition> munitions = new ArrayList<Munition>();
-    private ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+   final private ArrayList<Munition> munitions = new ArrayList<Munition>();
+  final  private ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 
     // private final static Dimension GAME_PANEL_DIMENSION = new Dimension(400, 450);
 
-    private SpaceShip spaceShip;
-    private Target target;
-    private GameUtils gameUtils;
+   final private SpaceShip spaceShip;
+   final private Target target;
+   final private GameInfoPanel gameInfoPanel;
 
     public GamePanel() {
 
@@ -34,7 +34,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         setFocusTraversalKeysEnabled(false);
         this.spaceShip = new SpaceShip();
         this.target = new Target();
-        this.gameUtils = new GameUtils();
+        this.gameInfoPanel = new GameInfoPanel();
         setBackground(Color.BLACK);
 
         validate();
@@ -43,21 +43,21 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     }
 
     public void checkIntersection() {
-        for (var munition : munitions) {
-            if (new Rectangle(munition.getCoordinateX(), munition.getCoordinateY(), 10, 20).
+        for (int index=0; index< munitions.size() ; index++) {
+            if (new Rectangle(munitions.get(index).getCoordinateX(), munitions.get(index).getCoordinateY(), 10, 20).
                     intersects(new Rectangle(target.getCoordinateX(), target.getCoordinateY(), 20, 20))) {
                 target.setIntersected(true);
-                munition.setIntersected(true);
-                gameUtils.setPointToHitTarget();
-
+                munitions.get(index).setIntersected(true);
+                gameInfoPanel.setPointToHitTarget();
             }
-            for (var obstacle : obstacles) {
-                if (new Rectangle(munition.getCoordinateX(), munition.getCoordinateY(), 10, 20).
-                        intersects(new Rectangle(obstacle.getCoordinateX(), obstacle.getCoordinateY(),
-                                obstacle.getImageWidth(), obstacle.getImageHeight()))) {
-                    obstacle.setIntersected(true);
-                    munition.setIntersected(true);
-                    gameUtils.setPointToHitObstacle();
+            for (int i =0; i< obstacles.size();i++) {
+                if (new Rectangle(munitions.get(index).getCoordinateX(), munitions.get(index).getCoordinateY(), 10, 20).
+                        intersects(new Rectangle(obstacles.get(i).getCoordinateX(), obstacles.get(i).getCoordinateY(),
+                                obstacles.get(i).getImageWidth(), obstacles.get(i).getImageHeight()))) {
+                    obstacles.get(i).setIntersected(true);
+                    munitions.get(index).setIntersected(true);
+                    gameInfoPanel.setPointToHitObstacle();
+
 
                 }
 
@@ -66,6 +66,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         }
 
+        gameInfoPanel.getPointLabel().setText("Point:"+gameInfoPanel.getGameUtils().getGamePoint());
 
     }
 
@@ -74,33 +75,35 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         super.paint(g);
         checkIntersection();
 
+        System.out.println( gameInfoPanel.getGameUtils().getGamePoint());
 
         g.setColor(Color.red);
         g.fillOval(target.getCoordinateX(), target.getCoordinateY(), 20, 20);
         g.drawImage(spaceShip.getSpaceShipImage(), spaceShip.getCoordinateX(), spaceShip.getCoordinateY(),
                 spaceShip.getImageWidth(), spaceShip.getImageHeight(), this);
 
-        if (gameUtils.getGameTime() % 100 == 0) {
+        if (gameInfoPanel.getGameUtils().getGameTime() % 100 == 0) {
             obstacles.add(new Obstacle());
         }
 
-        for (var obstacle : obstacles) {
-            if (obstacle.isPassed() || obstacle.isIntersected()) {
-                obstacles.remove(obstacle);
+        for (int index = 0 ; index < obstacles.size(); index++) {
+            if (obstacles.get(index).isPassed() || obstacles.get(index).isIntersected()) {
+                obstacles.remove(index);
                 continue;
             }
-            g.drawImage(obstacle.getObstacleImage(), obstacle.getCoordinateX(), obstacle.getCoordinateY(),
-                    obstacle.getImageWidth(), obstacle.getImageHeight(), this);
+
+            g.drawImage(obstacles.get(index).getObstacleImage(), obstacles.get(index).getCoordinateX(), obstacles.get(index).getCoordinateY(),
+                    obstacles.get(index).getImageWidth(), obstacles.get(index).getImageHeight(), this);
 
         }
 
         g.setColor(Color.BLUE);
-        for (var munition : munitions) {
-            if (munition.isMissed() || munition.isIntersected()) {
-                munitions.remove(munition);
+        for (int index = 0 ; index < munitions.size(); index++) {
+            if (munitions.get(index).isMissed() || munitions.get(index).isIntersected()) {
+                munitions.remove(index);
                 continue;
             }
-            g.fillRect(munition.getCoordinateX(), munition.getCoordinateY(), 10, 20);
+            g.fillRect(munitions.get(index).getCoordinateX(), munitions.get(index).getCoordinateY(), 10, 20);
         }
 
 
@@ -140,7 +143,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gameUtils.setGameTime();
+        gameInfoPanel.actionPerformed(e);
+        gameInfoPanel.setGameTime();
         for (var munition :
                 munitions) {
             munition.moveMunition();

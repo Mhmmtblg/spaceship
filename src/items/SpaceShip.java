@@ -22,7 +22,7 @@ public class SpaceShip{
     public SpaceShip() {
         this.level = 1;
         this.coordinateX = 0;
-        this.coordinateY = 540;
+        this.coordinateY = 510;
         this.isIntersected=false;
         assignSpaceShipImage();
 
@@ -95,8 +95,8 @@ public class SpaceShip{
 
     }
     public void moveShipDown() {
-        if (this.coordinateY >= 440) {
-            this.coordinateY = 440;
+        if (this.coordinateY >= 510) {
+            this.coordinateY = 510;
         }else{
             this.coordinateY += movementSizeY;
         }
