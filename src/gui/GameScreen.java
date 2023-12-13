@@ -1,11 +1,15 @@
 package gui;
 
+import items.GameUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GameScreen extends JFrame {
+public class GameScreen extends JFrame implements ActionListener {
+    Timer timer = new Timer(5, this);
+    private final GameUtils gameUtils;
     private final JFrame gameFrame;
     private final GamePanel gamePanel;
     private final GameInfoPanel gameInfoPanel;
@@ -13,6 +17,7 @@ public class GameScreen extends JFrame {
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(800, 700);
 
     public GameScreen() {
+        this.gameUtils = new GameUtils();
         this.gameFrame = new JFrame("Spaceship Game");
         this.gameFrame.setLayout(new BorderLayout());
         final JMenuBar screenMenuBar = createMenuBar();
@@ -26,6 +31,8 @@ public class GameScreen extends JFrame {
         this.gameFrame.add(this.gameInfoPanel, BorderLayout.NORTH);
         this.gameFrame.add(this.gamePanel, BorderLayout.CENTER);
         this.gameFrame.setVisible(true);
+
+        timer.start();
     }
 
 
@@ -58,4 +65,12 @@ public class GameScreen extends JFrame {
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        gameUtils.setGameTime();
+        gamePanel.actionPerformed(gameUtils.getGameTime());
+        gameInfoPanel.getPointLabel().setText("Point:" + gamePanel.getHitPoint());
+        gameInfoPanel.getMunitionLabel().setText("Munition:" + gamePanel.getUsedMunition());
+
+    }
 }

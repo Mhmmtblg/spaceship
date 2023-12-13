@@ -1,30 +1,36 @@
 package gui;
 
-import items.Obstacle;
-import items.Munition;
-import items.SpaceShip;
-import items.Target;
+import items.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-public class GamePanel extends JPanel implements KeyListener, ActionListener {
-    Timer timer = new Timer(5, this);
+public class GamePanel extends JPanel implements KeyListener {
 
 
-   final private ArrayList<Munition> munitions = new ArrayList<Munition>();
-  final  private ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    final private ArrayList<Munition> munitions = new ArrayList<Munition>();
+    final private ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 
     // private final static Dimension GAME_PANEL_DIMENSION = new Dimension(400, 450);
 
-   final private SpaceShip spaceShip;
-   final private Target target;
-   final private GameInfoPanel gameInfoPanel;
+    final private SpaceShip spaceShip;
+    final private Target target;
+
+
+    public int getHitPoint() {
+        return hitPoint;
+    }
+
+    private int hitPoint;
+
+    public int getUsedMunition() {
+        return usedMunition;
+    }
+
+    private int usedMunition;
 
     public GamePanel() {
 
@@ -32,41 +38,34 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+
         this.spaceShip = new SpaceShip();
         this.target = new Target();
-        this.gameInfoPanel = new GameInfoPanel();
         setBackground(Color.BLACK);
-
-        validate();
-        timer.start();
+        this.hitPoint = 0;
+        this.usedMunition = 0;
 
     }
 
     public void checkIntersection() {
-        for (int index=0; index< munitions.size() ; index++) {
+
+        for (int index = 0; index < munitions.size(); index++) {
             if (new Rectangle(munitions.get(index).getCoordinateX(), munitions.get(index).getCoordinateY(), 10, 20).
                     intersects(new Rectangle(target.getCoordinateX(), target.getCoordinateY(), 20, 20))) {
                 target.setIntersected(true);
                 munitions.get(index).setIntersected(true);
-                gameInfoPanel.setPointToHitTarget();
+                hitPoint += 100;
             }
-            for (int i =0; i< obstacles.size();i++) {
+            for (int i = 0; i < obstacles.size(); i++) {
                 if (new Rectangle(munitions.get(index).getCoordinateX(), munitions.get(index).getCoordinateY(), 10, 20).
                         intersects(new Rectangle(obstacles.get(i).getCoordinateX(), obstacles.get(i).getCoordinateY(),
                                 obstacles.get(i).getImageWidth(), obstacles.get(i).getImageHeight()))) {
                     obstacles.get(i).setIntersected(true);
                     munitions.get(index).setIntersected(true);
-                    gameInfoPanel.setPointToHitObstacle();
-
-
+                    hitPoint += 50;
                 }
-
             }
-
-
         }
-
-        gameInfoPanel.getPointLabel().setText("Point:"+gameInfoPanel.getGameUtils().getGamePoint());
 
     }
 
@@ -75,18 +74,13 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         super.paint(g);
         checkIntersection();
 
-        System.out.println( gameInfoPanel.getGameUtils().getGamePoint());
-
         g.setColor(Color.red);
         g.fillOval(target.getCoordinateX(), target.getCoordinateY(), 20, 20);
         g.drawImage(spaceShip.getSpaceShipImage(), spaceShip.getCoordinateX(), spaceShip.getCoordinateY(),
                 spaceShip.getImageWidth(), spaceShip.getImageHeight(), this);
 
-        if (gameInfoPanel.getGameUtils().getGameTime() % 100 == 0) {
-            obstacles.add(new Obstacle());
-        }
 
-        for (int index = 0 ; index < obstacles.size(); index++) {
+        for (int index = 0; index < obstacles.size(); index++) {
             if (obstacles.get(index).isPassed() || obstacles.get(index).isIntersected()) {
                 obstacles.remove(index);
                 continue;
@@ -98,7 +92,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         }
 
         g.setColor(Color.BLUE);
-        for (int index = 0 ; index < munitions.size(); index++) {
+        for (int index = 0; index < munitions.size(); index++) {
             if (munitions.get(index).isMissed() || munitions.get(index).isIntersected()) {
                 munitions.remove(index);
                 continue;
@@ -132,6 +126,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             this.spaceShip.moveShipDown();
         } else if (c == KeyEvent.VK_SPACE) {
             munitions.add(new Munition(this.spaceShip.getCoordinateX() + 25, this.spaceShip.getCoordinateY() - 10));
+            usedMunition += 1;
         }
 
     }
@@ -141,10 +136,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        gameInfoPanel.actionPerformed(e);
-        gameInfoPanel.setGameTime();
+    public void addObstacles(int Time) {
+        if (Time % 100 == 0) {
+            this.obstacles.add(new Obstacle());
+        }
+
+    }
+
+    public void actionPerformed(int Time) {
+        addObstacles(Time);
         for (var munition :
                 munitions) {
             munition.moveMunition();
